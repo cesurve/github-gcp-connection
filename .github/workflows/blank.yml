@@ -1,27 +1,47 @@
 name: Test GCP Connection
+
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+
 jobs:
   test-connection:
     runs-on: ubuntu-latest
-    permissions: 
+
+    permissions:
       contents: read
       id-token: write
+
     steps:
-      - name: 'Checkout repository'
-        uses: 'actions/checkout@v4'
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - id: 'auth'
-        name: 'Authentication to google Cloud'
-        uses: 'google-github-actions/auth@v2'
+      - name: Debug Secrets
+        run: |
+          if [ -n "${{ secrets.WIF_GCP_PROVIDER }}" ]; then
+            echo "✅ WIF_GCP_PROVIDER is set"
+          else
+            echo "❌ WIF_GCP_PROVIDER is EMPTY"
+            exit 1
+          fi
+
+          if [ -n "${{ secrets.WIF_SERVICEACCOUNT_GCP_PROVIDER }}" ]; then
+            echo "✅ WIF_SERVICEACCOUNT_GCP_PROVIDER is set"
+          else
+            echo "❌ WIF_SERVICEACCOUNT_GCP_PROVIDER is EMPTY"
+            exit 1
+          fi
+
+      - id: auth
+        name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: ${{secrets.WIF_GCP_PROVIDER}}$
-          service_account: ${{secrets.WIF_SERVICEACCOUNT_GCP_PROVIDER}}$
+          workload_identity_provider: ${{ secrets.WIF_GCP_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICEACCOUNT_GCP_PROVIDER }}
 
-      - name: 'Verify Connection'
+      - name: Verify Connection
         run: |
           gcloud auth list
           gcloud config list
-          echo "Connection is Successful"
-          
+          echo "✅ Connection is Successful"
