@@ -16,8 +16,8 @@ jobs:
         name: 'Authentication to google Cloud'
         uses: 'google-github-actions/auth@v2'
         with:
-          workload_identity_provider: ${{secrets.WIF_Provider}}$
-          service_account: ${{secrets.WIF_ServiceAccount_Provider}}$
+          workload_identity_provider: ${{secrets.WIF_GCP_PROVIDER}}$
+          service_account: ${{secrets.WIF_SERVICEACCOUNT_GCP_PROVIDER}}$
 
       - name: 'Verify Connection'
         run: |
